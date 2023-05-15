@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chamada de Vídeo</title>
+  <style>
+    body {
+      background-color: #f2f2f2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    
+    #localVideo {
+      width: 400px;
+      height: 300px;
+      border: 1px solid #1a237e;
+      background-color: #fff;
+    }
+    
+    .controls {
+      margin-top: 10px;
+      text-align: center;
+    }
+    
+    .button {
+      background-color: #ffffff;
+      color: #3c4043;
+      font-size: 14px;
+      padding: 10px 20px;
+      border: 1px solid #dadce0;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 0 5px;
+    }
+    
+    .button:hover {
+      background-color: #f8f9fa;
+    }
+  </style>
+</head>
+<body>
+  <h1>Chamada de Vídeo</h1>
+  
+  <video id="localVideo" autoplay></video>
+  
+  <div class="controls">
+    <button class="button" id="toggleCameraButton">Ligar/Desligar Câmera</button>
+    <button class="button" id="toggleMicButton">Ligar/Desligar Microfone</button>
+  </div>
+  
+  <script>
+    // Obter a referência ao elemento de vídeo local
+    const localVideo = document.getElementById('localVideo');
+    
+    // Obter a referência aos botões de controle
+    const toggleCameraButton = document.getElementById('toggleCameraButton');
+    const toggleMicButton = document.getElementById('toggleMicButton');
+    
+    // Verificar se o navegador suporta a API de mídia
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      // Pedir permissão para acessar a câmera e o microfone do usuário
+      navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        .then(function(stream) {
+          // Exibir o vídeo local no elemento de vídeo
+          localVideo.srcObject = stream;
+          
+          // Função para ligar/desligar a câmera
+          toggleCameraButton.addEventListener('click', function() {
+            const tracks = stream.getVideoTracks();
+            tracks.forEach(function(track) {
+              track.enabled = !track.enabled;
+            });
+            toggleCameraButton.classList.toggle('button--active', tracks[0].enabled);
+          });
+          
+          // Função para ligar/desligar o microfone
+          toggleMicButton.addEventListener('click', function() {
+            const tracks = stream.getAudioTracks();
+            tracks.forEach(function(track) {
+              track.enabled = !track.enabled;
+            });
+            toggleMicButton.classList.toggle('button--active', tracks[0].enabled);
+          });
+        })
+        .catch(function(error) {
+          console.log('Ocorreu um erro ao acessar os dispositivos de mídia:', error);
+        });
+    } else {
+      console.log('A API de mídia não é suportada neste navegador.');
+    }
+  </script>
+</body>
+</html>
